@@ -4,7 +4,6 @@ Logs all incoming HTTP requests and displays them in a real-time web UI
 """
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
-from fastapi.staticfiles import StaticFiles
 from datetime import datetime
 import json
 import asyncio
@@ -40,8 +39,9 @@ async def notify_clients(request_data: Dict[str, Any]):
     for client_queue in list(sse_clients):
         try:
             await client_queue.put(message)
-        except:
-            sse_clients.remove(client_queue)
+        except Exception:
+            if client_queue in sse_clients:
+                sse_clients.remove(client_queue)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -386,7 +386,8 @@ async def events(request: Request):
                     # Send keep-alive comment
                     yield ": keep-alive\n\n"
         finally:
-            sse_clients.remove(client_queue)
+            if client_queue in sse_clients:
+                sse_clients.remove(client_queue)
     
     return StreamingResponse(
         event_generator(),

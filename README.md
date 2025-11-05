@@ -17,41 +17,65 @@ A simple Python application using FastAPI that logs all incoming HTTP requests a
 - 💾 In-memory storage (last 100 requests)
 - 🔄 Auto-refresh capabilities
 
-## Installation
+## Installation & Usage
 
-1. Install Python 3.7 or higher
+### 🐳 Option 1: Using Docker (Recommended)
 
-2. Install dependencies:
+1. **Build and start the container:**
+```bash
+docker-compose up -d
+```
+
+2. **Open your browser:**
+```
+http://localhost:3030
+```
+
+3. **Send test requests:**
+```bash
+curl http://localhost:3030/test
+curl -X POST http://localhost:3030/webhook -H "Content-Type: application/json" -d '{"key": "value"}'
+curl http://localhost:3030/api/users?id=123
+```
+
+4. **View logs:**
+```bash
+docker-compose logs -f
+```
+
+5. **Stop the container:**
+```bash
+docker-compose down
+```
+
+### 🐍 Option 2: Using Python Directly
+
+1. **Install Python 3.7 or higher**
+
+2. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-## Usage
-
-1. Start the server:
+3. **Start the server:**
 ```bash
 python app.py
 ```
 
-Or using uvicorn directly:
-```bash
-uvicorn app:app --host 0.0.0.0 --port 8000
+4. **Open your browser:**
+```
+http://localhost:3030
 ```
 
-2. Open your browser and navigate to:
-```
-http://localhost:8000
-```
-
-3. Send HTTP requests to any endpoint (except `/`, `/events`, and `/api/requests`):
+5. **Send HTTP requests to any endpoint (except `/`, `/events`, and `/api/requests`):**
 ```bash
 # Example requests
-curl http://localhost:8000/test
-curl -X POST http://localhost:8000/webhook -H "Content-Type: application/json" -d '{"key": "value"}'
-curl http://localhost:8000/api/users?id=123
+curl http://localhost:3030/test
+curl -X POST http://localhost:3030/webhook -H "Content-Type: application/json" -d '{"key": "value"}'
+curl http://localhost:3030/api/users?id=123
 ```
 
-4. View the logged requests in the web UI in real-time!
+6. **View the logged requests in the web UI in real-time!**
 
 ## API Endpoints
 
@@ -75,10 +99,32 @@ The application is intentionally simple and self-contained:
 - No database required (in-memory storage)
 - Minimal dependencies (just FastAPI and uvicorn)
 
+## Docker
+
+The application includes a Dockerfile and docker-compose.yml for easy containerization.
+
+**Build the image manually:**
+```bash
+docker build -t webhook-logger .
+```
+
+**Run without docker-compose:**
+```bash
+docker run -d -p 3030:3030 --name webhook-logger webhook-logger
+```
+
+**Change the port:**
+Edit `docker-compose.yml` and modify the ports mapping:
+```yaml
+ports:
+  - "8080:3030"  # Change 8080 to your desired port
+```
+
 ## Customization
 
 You can customize the application by modifying `app.py`:
 - Change the maximum number of stored requests (default: 100)
+- Change the port (default: 3030)
 - Modify the UI styling in the HTML template
 - Add authentication if needed
 - Persist requests to a database
